@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34009.444
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orch_back_API", "Orch_back_API.csproj", "{BC949297-305E-4114-B1CE-F1976412A422}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC949297-305E-4114-B1CE-F1976412A422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC949297-305E-4114-B1CE-F1976412A422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC949297-305E-4114-B1CE-F1976412A422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC949297-305E-4114-B1CE-F1976412A422}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DD5369F-FB72-4B1E-BD76-FC91655E7D27}
+	EndGlobalSection
+EndGlobal
