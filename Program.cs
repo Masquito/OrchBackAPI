@@ -23,6 +23,9 @@ namespace Orch_back_API
                 app.UseSwaggerUI();
             }
 
+            app.UseCors(builder =>
+            builder.WithOrigins("http://localhost:4200"));
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

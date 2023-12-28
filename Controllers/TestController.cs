@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Orch_back_API.Entities;
+using System.Text.Json;
 
 namespace Orch_back_API.Controllers
 {
@@ -19,7 +20,8 @@ namespace Orch_back_API.Controllers
         public IActionResult get_data_test()
         {
             var user = myJDBContext.Users.First();
-            return Ok(user);
+            var user_json = JsonSerializer.Serialize(user);
+            return Ok(user_json);
         }
     }
 }
