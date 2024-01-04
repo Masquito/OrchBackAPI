@@ -3345,8 +3345,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\adamw\\.nuget\\packages\\": {},
-    "D:\\VS inne\\NuGetPackages": {}
+    "C:\\Users\\adamw\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -3357,12 +3356,8 @@
       "packagesPath": "C:\\Users\\adamw\\.nuget\\packages\\",
       "outputPath": "D:\\Orch_back_API\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "D:\\VS inne\\NuGetPackages"
-      ],
       "configFilePaths": [
         "C:\\Users\\adamw\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3441,7 +3436,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }
