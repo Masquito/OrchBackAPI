@@ -24,10 +24,5 @@ namespace Orch_back_API.Entities
             base.OnModelCreating(modelBuilder);
 
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=Orchard_INZDB;Trusted_Connection=True;");
-            optionsBuilder.EnableSensitiveDataLogging();
-        }
     }
 }
