@@ -76,3 +76,4 @@ D:\Orch_back_API\obj\Debug\net8.0\Orch_back_API.pdb
 D:\Orch_back_API\obj\Debug\net8.0\Orch_back_API.genruntimeconfig.cache
 D:\Orch_back_API\obj\Debug\net8.0\ref\Orch_back_API.dll
 D:\Orch_back_API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Orch_back_API\obj\Debug\net8.0\Orch_back_API.sourcelink.json

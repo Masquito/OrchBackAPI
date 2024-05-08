@@ -8,29 +8,35 @@ using System.Text;
 
 namespace Orch_back_API
 {
+    /// <summary>Klasa program, w której znajdziemy Main'a</summary>
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             var config = builder.Configuration;
             var secret = config["Jwt:Secret"];
 
+            /// <summary>
+            ///     <p>Definicja CORS dla API. Dodajemy tutaj now¹ strategiê, która jest pod mój FrontEnd w Angularze na andresie http://localhost:4200</p>
+            ///     <p>Akceptujemy dowoln¹ metodê HTTP przy ¿¹daniach z origina zdefiniowanego wy¿ej pod localhostem</p>
+            ///     <p>Akceptujemy dowolny nag³ówek z origina zdefiniowanego wy¿ej pod localhostem</p>
+            ///     <p>¯¹dania mog¹ zawieraæ dane uwierzytelniaj¹ce/p>
+            /// </summary>
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("CORSPolicy",
-                    policy =>
-                    {
-                        policy.WithOrigins("http://localhost:4200")
-                               .AllowAnyMethod() 
-                               .AllowAnyHeader()
-                               .AllowCredentials();
-            });
+                options.AddPolicy("CORSPolicy", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200")
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+
             });
 
-
+            /// <summary>Tutaj dodajemy autoryzacjê JWT. Poprzez metodê AddAuthentication i AddJwtBearer</summary>
             builder.Services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,6 +46,7 @@ namespace Orch_back_API
             {
                 jwt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
+                    /// <summary>Konfiguracja parametrów u¿ywanych do validacji tokenów</summary>
                     ValidateIssuer = true,
                     ValidateLifetime = true,
                     ValidateAudience = true,
@@ -50,6 +57,10 @@ namespace Orch_back_API
                 };
             });
 
+
+            /// <summary>
+            ///     <p>Dodanie kilku us³ug oraz DBContextu z ConnectionStringiem</p>
+            /// </summary>
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -60,15 +71,17 @@ namespace Orch_back_API
                 options.EnableSensitiveDataLogging();
             });
 
+            /// <summary>Zbudowanie aplikacji</summary>
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            /// <summary>Konfiguracja Middleware'ów oraz Dodanie endpointów dla akcji kontrollerów do IEndpointRouteBuilder bez specyfikowania œcie¿ek</summary>
+            /// <seealso cref="https://learn.microsoft.com/pl-pl/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0"/>
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors("CORSPolicy");
