@@ -39,11 +39,11 @@ namespace Orch_back_API.Controllers
         public Users Authenticate(Users userLogin)
         {
             PasswordHasher<Users> passwordHasher = new();
-            var currentUser = _context.Users.First(x => x.Email.ToLower() ==
+            var currentUser = _context.Users.FirstOrDefault(x => x.Email.ToLower() ==
                 userLogin.Email.ToLower());
-            if(passwordHasher.VerifyHashedPassword(userLogin, currentUser.Password, userLogin.Password) == PasswordVerificationResult.Success)
+            if(currentUser != null)
             {
-                if (currentUser != null)
+                if (passwordHasher.VerifyHashedPassword(userLogin, currentUser.Password, userLogin.Password) == PasswordVerificationResult.Success)
                 {
                     return currentUser;
                 }
