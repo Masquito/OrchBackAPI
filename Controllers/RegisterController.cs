@@ -8,8 +8,10 @@ using Orch_back_API.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Drawing;
+using System;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Drawing;
 
 namespace Orch_back_API.Controllers
 {

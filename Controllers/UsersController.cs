@@ -1,37 +1,52 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Orch_back_API.Entities;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Orch_back_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        [HttpGet]
-        [Route("Admins")]
-        [Authorize(Roles = "FAU")]
-        public IActionResult AdminEndPoint()
+        private readonly MyJDBContext _context;
+        public UsersController(MyJDBContext context)
         {
-            var currentUser = GetCurrentUser();
-            return Ok($"Hi you are an {currentUser.Role}");
+            this._context = context;
         }
-        private Users GetCurrentUser()
+
+        [HttpPost]
+        [Route("updatedata")]
+        public ActionResult UpdateUserData([FromBody] UsersComing user)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
+            PasswordHasher<Users> passwordHasher = new();
+            var coPrzyszlo = user;
+            Users userConverted = new Users
             {
-                var userClaims = identity.Claims;
-                return new Users
-                {
-                    Username = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
-                    Role = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value
-                };
-            }
-            return null;
+                Id = coPrzyszlo.Id,
+                Username = coPrzyszlo.Username,
+                Password = coPrzyszlo.Password,
+                Email = coPrzyszlo.Email,
+                Role = coPrzyszlo.Role,
+                Region = coPrzyszlo.Region,
+                Age = coPrzyszlo.Age,
+                City = coPrzyszlo.City,
+                ProfilePhoto = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(coPrzyszlo.ProfilePhoto)),
+                Notifications = coPrzyszlo.Notifications,
+                Messes = coPrzyszlo.Messes
+            };
+            userConverted.Password = passwordHasher.HashPassword(userConverted, userConverted.Password);
+            _context.Users.Update(userConverted);
+            _context.SaveChanges();
+            return Ok();
         }
+
     }
 }
 
