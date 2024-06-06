@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.IdentityModel.Tokens;
 using Orch_back_API.Entities;
+using System.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Orch_back_API.Controllers
 {
@@ -42,6 +46,7 @@ namespace Orch_back_API.Controllers
         [HttpPost]
         public ActionResult Login([FromBody] Users users)
         {
+            PasswordHasher<Users> passwordHasher = new();
             var Shared = new Shared(this._context, this._config);
             var user = Shared.Authenticate(users);
             if (user != null)

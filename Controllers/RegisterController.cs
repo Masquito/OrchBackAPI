@@ -41,7 +41,7 @@ namespace Orch_back_API.Controllers
             userToAdd.Role = "NFUA";
             userToAdd.Id = new Guid();
             userToAdd.Password = passwordHasher.HashPassword(userToAdd, userToAdd.Password);
-            userToAdd.ProfilePhoto = System.IO.File.ReadAllBytes("D:\\Orch_back_API\\defaultProfilePicture.png");
+            userToAdd.ProfilePhotoPath = Shared.ImgagesFolderPath + "\\defaultProfilePicture.png";
             _dbcontext.Users.Add(userToAdd);
             _dbcontext.SaveChanges();
             bool finished = true;

@@ -95,8 +95,8 @@ namespace Orch_back_API.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("ProfilePhoto")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("ProfilePhotoPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");

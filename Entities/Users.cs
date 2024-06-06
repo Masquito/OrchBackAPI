@@ -16,7 +16,7 @@ namespace Orch_back_API.Entities
         public string? Region { get; set; }
         public int? Age { get; set; }
         public string? City { get; set; }
-        public byte[]? ProfilePhoto { get; set; }
+        public string? ProfilePhotoPath { get; set; }
         public List<Messages> Messes { get; set; } = new List<Messages>();
         public List<Notifications> Notifications { get; set; } = new List<Notifications>();
 

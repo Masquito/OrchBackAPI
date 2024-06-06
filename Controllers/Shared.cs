@@ -12,6 +12,7 @@ namespace Orch_back_API.Controllers
 {
     public class Shared
     {
+        public static string ImgagesFolderPath = "C:\\nginx-1.27.0\\html\\Userimages";
         private readonly MyJDBContext _context;
         private readonly IConfiguration _configuration;
         public Shared(MyJDBContext _context, IConfiguration _configuration)
