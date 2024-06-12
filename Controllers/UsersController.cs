@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Orch_back_API.Entities;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -39,24 +40,37 @@ namespace Orch_back_API.Controllers
                 Region = coPrzyszlo.Region,
                 Age = coPrzyszlo.Age,
                 City = coPrzyszlo.City,
-                ProfilePhotoPath = Shared.ImgagesFolderPath + "\\" + coPrzyszlo.Id.ToString() + "ProfilePhoto.jpg",
+                ProfilePhotoPath = Shared.ImgagesFolderPath + "\\" + coPrzyszlo.Id.ToString() + "ProfilePhoto" + coPrzyszlo.ProfilePhoto.FileName.ToString(),
                 Notifications = coPrzyszlo.Notifications,
                 Messes = coPrzyszlo.Messes
             };
             userConverted.Password = passwordHasher.HashPassword(userConverted, userConverted.Password);
-            var ProfilePhoto = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(coPrzyszlo.ProfilePhoto));
-            using (var ms = new System.IO.MemoryStream(ProfilePhoto))
+            using (Stream fileStream = new FileStream(userConverted.ProfilePhotoPath, FileMode.Create))
             {
-                using (var img = Image.FromStream(ms))
-                {
-                    img.Save(userConverted.ProfilePhotoPath, ImageFormat.Jpeg);
-                }
+                coPrzyszlo.ProfilePhoto.CopyTo(fileStream);
+                fileStream.Dispose();
             }
             _context.Users.Update(userConverted);
             _context.SaveChanges();
             return Ok();
         }
 
+        [HttpPost]
+        [Route("getuserphoto")]
+        public ActionResult GetUserImage([FromBody] Users userWithIdOnly)
+        {
+            var user = _context.Users.Where(aw => aw.Id == userWithIdOnly.Id).First();
+            var filePath = user.ProfilePhotoPath;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var image = System.IO.File.OpenRead(filePath);
+            string extension = Path.GetExtension(image.Name);
+            return File(image, "image/" + extension.ToString().Substring(1));
+        }
     }
 }
 
