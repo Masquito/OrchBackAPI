@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Validations;
 using Orch_back_API.Entities;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -33,7 +34,7 @@ namespace Orch_back_API.Controllers
             Users userConverted = new Users
             {
                 Id = coPrzyszlo.Id,
-                Username = coPrzyszlo.Username,    //W TEJ WERSJI DZIAŁA PRZESYLANIE PLIKU
+                Username = coPrzyszlo.Username,   
                 Password = coPrzyszlo.Password,
                 Email = coPrzyszlo.Email,
                 Role = coPrzyszlo.Role,
@@ -70,6 +71,73 @@ namespace Orch_back_API.Controllers
             var image = System.IO.File.OpenRead(filePath);
             string extension = Path.GetExtension(image.Name);
             return File(image, "image/" + extension.ToString().Substring(1));
+        }
+
+        [HttpPost]
+        [Route("getuserssearchedforwithfilters")]
+        public ActionResult GetUsersSearchedForWithFilters([FromForm] UsersComing user)
+        {
+            var ta = user;
+
+            if (!IsRegion(ta) && !IsAge(ta) && !IsCity(ta))
+            {
+                return NotFound();
+            }
+
+            var query = _context.Users.AsQueryable();
+
+            if (IsRegion(ta))
+            {
+                query = query.Where(eb => eb.Region == ta.Region);
+            }
+
+            if (IsAge(ta))
+            {
+                query = query.Where(eb => eb.Age == ta.Age);
+            }
+
+            if (IsCity(ta))
+            {
+                query = query.Where(eb => eb.City == ta.City);
+            }
+
+            var users = query.ToList();
+
+            return Ok(new {users});
+        }
+
+        private bool IsRegion(UsersComing user)
+        {
+            if(user.Region == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        private bool IsAge(UsersComing user)
+        {
+            if (user.Age == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        private bool IsCity(UsersComing user)
+        {
+            if (user.City == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

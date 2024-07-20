@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Orch_back_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+76a24675ee5d13bbb50b5047a1fb77ccb8ba6e12")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df8f7523ab5fd923d8e724a9363d38175c4b82a8")]
 [assembly: System.Reflection.AssemblyProductAttribute("Orch_back_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Orch_back_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
