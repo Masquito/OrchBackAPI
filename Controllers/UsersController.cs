@@ -74,6 +74,22 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
+        [Route("getuserbyid")]
+        public ActionResult GetUserById([FromBody] UsersComing user)
+        {
+            var id = user.Id;
+            var userToReturn = _context.Users.Where(eb => eb.Id.Equals(id)).FirstOrDefault();
+            if(userToReturn != null)
+            {
+                return Ok(new { userToReturn });
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
         [Route("getuserssearchedforwithfilters")]
         public ActionResult GetUsersSearchedForWithFilters([FromForm] UsersComing user)
         {
