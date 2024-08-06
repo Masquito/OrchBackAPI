@@ -24,21 +24,20 @@ namespace Orch_back_API.Migrations
 
             modelBuilder.Entity("Orch_back_API.Entities.Messages", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AuthorId")
+                    b.Property<Guid?>("AuthorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("DevlieryId")
+                    b.Property<Guid?>("DeliveryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("SendDate")
+                    b.Property<DateTime?>("SendDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
@@ -52,7 +51,7 @@ namespace Orch_back_API.Migrations
 
             modelBuilder.Entity("Orch_back_API.Entities.Notifications", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -116,8 +115,7 @@ namespace Orch_back_API.Migrations
                 {
                     b.HasOne("Orch_back_API.Entities.Users", "Author")
                         .WithMany("Messes")
-                        .HasForeignKey("AuthorId")
-                        .IsRequired();
+                        .HasForeignKey("AuthorId");
 
                     b.Navigation("Author");
                 });

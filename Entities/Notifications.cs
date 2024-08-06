@@ -2,7 +2,7 @@
 {
     public class Notifications
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string? Content { get; set; }
         public DateTime? SendDate { get; set; }
         public Guid? DeliveryId { get; set; }
