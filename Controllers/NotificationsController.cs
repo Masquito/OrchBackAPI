@@ -7,6 +7,12 @@ using System.Text.Json.Serialization;
 
 namespace Orch_back_API.Controllers
 {
+    public class objToSend
+    {
+        public Notifications notification { get; set; }
+        public String dateS { get; set; }
+        public String dateL { get; set; }
+    }
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -19,17 +25,28 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetAllNotificationsFrom3Months([FromBody] Users loggedUserWithIdOnly)
+        public ActionResult GetAllNotificationsFrom3Days([FromBody] Users loggedUserWithIdOnly)
         {
-            var coPrzyszlo = loggedUserWithIdOnly;
-            List<Notifications> loggedUserNotificationsFrom3Months = [.. _context.Notifications.Where(x => x.DeliveryId == loggedUserWithIdOnly.Id).Where(x => x.SendDate > DateTime.UtcNow.AddMonths(-3))];
+            List<objToSend> toSend = new List<objToSend>();
+            List<Notifications> loggedUserNotificationsFrom3Months = [.. _context.Notifications.Where(x => x.DeliveryId == loggedUserWithIdOnly.Id).Where(x => x.SendDate > DateTime.UtcNow.AddDays(-3))];
+
+            foreach(var notification in loggedUserNotificationsFrom3Months)
+            {
+                DateTime data = (DateTime)notification.SendDate;
+                objToSend not = new objToSend();
+                not.notification = notification;
+                not.dateS = data.Hour.ToString() + ":" + checkIfAdd0(data.Minute);
+                not.dateL = data.Year.ToString() + "." + checkIfAdd0(data.Month) + "." + checkIfAdd0(data.Day);
+                toSend.Add(not);
+            }
+
             if(loggedUserNotificationsFrom3Months.Count == 0)
             {
                 return NotFound();
             }
             else
             {
-                return Ok(loggedUserNotificationsFrom3Months);
+                return Ok(toSend);
             }
         }
 
@@ -41,6 +58,18 @@ namespace Orch_back_API.Controllers
             _context.Notifications.Remove(coPrzyszl);
             _context.SaveChanges();
             return Ok();
+        }
+
+        public string checkIfAdd0(int input)
+        {
+            if(input < 10)
+            {
+                return "0" + input.ToString();
+            }
+            else
+            {
+                return input.ToString();
+            }
         }
     }
 }

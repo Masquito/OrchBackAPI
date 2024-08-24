@@ -31,29 +31,54 @@ namespace Orch_back_API.Controllers
         {
             PasswordHasher<Users> passwordHasher = new();
             var coPrzyszlo = user;
-            Users userConverted = new Users
+            Users userConverted = new Users();
+            if (coPrzyszlo.ProfilePhoto == null)
             {
-                Id = coPrzyszlo.Id,
-                Username = coPrzyszlo.Username,   
-                Password = coPrzyszlo.Password,
-                Email = coPrzyszlo.Email,
-                Role = coPrzyszlo.Role,
-                Region = coPrzyszlo.Region,
-                Age = coPrzyszlo.Age,
-                City = coPrzyszlo.City,
-                ProfilePhotoPath = Shared.ImgagesFolderPath + "\\" + coPrzyszlo.Id.ToString() + "ProfilePhoto" + coPrzyszlo.ProfilePhoto.FileName.ToString(),
-                Notifications = coPrzyszlo.Notifications,
-                Messes = coPrzyszlo.Messes
-            };
-            userConverted.Password = passwordHasher.HashPassword(userConverted, userConverted.Password);
-            using (Stream fileStream = new FileStream(userConverted.ProfilePhotoPath, FileMode.Create))
-            {
-                coPrzyszlo.ProfilePhoto.CopyTo(fileStream);
-                fileStream.Dispose();
+                userConverted = new Users
+                {
+                    Id = coPrzyszlo.Id,
+                    Username = coPrzyszlo.Username,
+                    Password = coPrzyszlo.Password,
+                    Email = coPrzyszlo.Email,
+                    Role = coPrzyszlo.Role,
+                    Region = coPrzyszlo.Region,
+                    Age = coPrzyszlo.Age,
+                    City = coPrzyszlo.City,
+                    ProfilePhotoPath = _context.Users.Where(eb => eb.Id == user.Id).FirstOrDefault().ProfilePhotoPath,
+                    Notifications = coPrzyszlo.Notifications,
+                    Messes = coPrzyszlo.Messes
+                };
             }
+            else
+            {
+                userConverted = new Users
+                {
+                    Id = coPrzyszlo.Id,
+                    Username = coPrzyszlo.Username,
+                    Password = coPrzyszlo.Password,
+                    Email = coPrzyszlo.Email,
+                    Role = coPrzyszlo.Role,
+                    Region = coPrzyszlo.Region,
+                    Age = coPrzyszlo.Age,
+                    City = coPrzyszlo.City,
+                    ProfilePhotoPath = Shared.ImgagesFolderPath + "\\" + coPrzyszlo.Id.ToString() + "ProfilePhoto" + coPrzyszlo.ProfilePhoto.FileName.ToString(),
+                    Notifications = coPrzyszlo.Notifications,
+                    Messes = coPrzyszlo.Messes
+                };
+            }
+            userConverted.Password = passwordHasher.HashPassword(userConverted, userConverted.Password);
+            if(coPrzyszlo.ProfilePhoto != null)
+            {
+                using (Stream fileStream = new FileStream(userConverted.ProfilePhotoPath, FileMode.Create))
+                {
+                    coPrzyszlo.ProfilePhoto.CopyTo(fileStream);  
+                    fileStream.Dispose();
+                }
+            }
+            _context.ChangeTracker.Clear();
             _context.Users.Update(userConverted);
             _context.SaveChanges();
-            return Ok();
+            return Ok(userConverted);
         }
 
         [HttpPost]
@@ -120,6 +145,34 @@ namespace Orch_back_API.Controllers
             var users = query.ToList();
 
             return Ok(new {users});
+        }
+
+        [HttpPost]
+        [Route("checkifusernameexists")]
+        public ActionResult CheckIfUsernameExists([FromBody] UsersComing user)
+        {
+            foreach(var usera in _context.Users)
+            {
+                if(usera.Username == user.Username)
+                {
+                    return Ok(true);
+                }
+            }
+            return Ok(false);
+        }
+
+        [HttpPost]
+        [Route("checkifemailexists")]
+        public ActionResult CheckIfEmailExists([FromBody] UsersComing user)
+        {
+            foreach (var usera in _context.Users)
+            {
+                if (usera.Email == user.Email)
+                {
+                    return Ok(true);
+                }
+            }
+            return Ok(false);
         }
 
         private bool IsRegion(UsersComing user)
