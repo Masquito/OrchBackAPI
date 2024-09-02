@@ -14,6 +14,11 @@ using System.Text.Json.Nodes;
 
 namespace Orch_back_API.Controllers
 {
+    public class NotificationObjectFromApi
+    {
+        public string VisitorId { get; set; }
+        public string HostId { get; set;}
+    }
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -115,6 +120,23 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
+        [Route("addnotificationwhenprofilevisited")]
+        public ActionResult AddNotificationWhenProfileVisited([FromBody] NotificationObjectFromApi fromApi)
+        {
+            Notifications notificationToBeAddedToDatabase = new Notifications();
+            Users authorOf = _context.Users.Where(eb => eb.Id.ToString() == fromApi.VisitorId).FirstOrDefault();
+            notificationToBeAddedToDatabase.Id = Guid.NewGuid();
+            notificationToBeAddedToDatabase.Author = authorOf;
+            notificationToBeAddedToDatabase.AuthorId = authorOf.Id;
+            notificationToBeAddedToDatabase.Content = "User " + authorOf.Username + " has visited your profile.";
+            notificationToBeAddedToDatabase.SendDate = DateTime.Now;
+            notificationToBeAddedToDatabase.DeliveryId = new Guid(fromApi.HostId);
+            _context.Notifications.Add(notificationToBeAddedToDatabase);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
         [Route("getuserssearchedforwithfilters")]
         public ActionResult GetUsersSearchedForWithFilters([FromForm] UsersComing user)
         {
@@ -143,7 +165,7 @@ namespace Orch_back_API.Controllers
             }
 
             var users = query.ToList();
-
+            users.Remove(_context.Users.Where(eb => eb.Id == ta.Id).FirstOrDefault()!);
             return Ok(new {users});
         }
 

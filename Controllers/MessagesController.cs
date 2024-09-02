@@ -19,6 +19,37 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
+        [Route("GetAllUserMessagessWithFilter")]
+        public ActionResult GetAllUserMessagessWithFilter([FromForm] UsersComing userWithIdOnlyAndOnUsernameIsFilter)
+        {
+            var users = new List<Users>();
+            var messages = _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnlyAndOnUsernameIsFilter.Id).ToList().OrderByDescending(eb => eb.SendDate);
+            List<Guid> authorIds = [];
+            foreach (var message in messages)
+            {
+                authorIds.Add((Guid)message.AuthorId);
+            }
+
+            if(userWithIdOnlyAndOnUsernameIsFilter.Username == null)
+            {
+                users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id))];
+            }
+            else
+            {
+                users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id)).Where(x => x.Username.Contains(userWithIdOnlyAndOnUsernameIsFilter.Username))];
+            }
+
+            if (messages.Count() == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(new { messages, users });
+            }
+        }
+
+        [HttpPost]
         [Route("GetAllUserMessagess")]
         public ActionResult GetAllUserMessagess([FromBody] UsersComing userWithIdOnly)
         {
