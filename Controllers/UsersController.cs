@@ -171,6 +171,7 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("checkifusernameexists")]
+        [AllowAnonymous]
         public ActionResult CheckIfUsernameExists([FromBody] UsersComing user)
         {
             foreach(var usera in _context.Users)
@@ -185,6 +186,7 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("checkifemailexists")]
+        [AllowAnonymous]
         public ActionResult CheckIfEmailExists([FromBody] UsersComing user)
         {
             foreach (var usera in _context.Users)
