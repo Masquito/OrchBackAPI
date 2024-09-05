@@ -74,6 +74,30 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
+        [Route("GetLast5UserMessages")]
+        public ActionResult GetLast5UserMessages([FromBody] UsersComing userWithIdOnly)
+        {
+            var users = new List<Users>();
+            var messages = _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnly.Id).ToList().OrderByDescending(eb => eb.SendDate).Take(5);
+            List<Guid> authorIds = [];
+            foreach (var message in messages)
+            {
+                authorIds.Add((Guid)message.AuthorId);
+            }
+
+            users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id))];
+
+            if (messages.Count() == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(new { messages, users });
+            }
+        }
+
+        [HttpPost]
         [Route("reciveMessageSendByUserToUser")]
         public ActionResult ReciveMessageSendByUsertoUser([FromForm] Messages message)
         {
