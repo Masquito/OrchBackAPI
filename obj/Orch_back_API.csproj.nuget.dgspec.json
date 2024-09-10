@@ -77,6 +77,106 @@
               "target": "Package",
               "version": "[4.1.0, )"
             },
+            "Nethereum.ABI": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Accounts": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Autogen.ContractApi": {
+              "target": "Package",
+              "version": "[4.20.1, )"
+            },
+            "Nethereum.BlockchainProcessing": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Contracts": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.ENS": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Geth": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.HdWallet": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Hex": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.JsonRpc.Client": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.JsonRpc.RpcClient": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.JsonRpc.WebSocketClient": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.KeyStore": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Merkle.Patricia": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Model": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Parity": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Quorum": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.RLP": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.RPC": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.RPC.Reactive": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Signer": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Signer.EIP712": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.StandardTokenEIP20": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Util": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
+            "Nethereum.Web3": {
+              "target": "Package",
+              "version": "[4.21.4, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
