@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Validations;
 using Orch_back_API.Entities;
 using System.Drawing;
@@ -32,13 +33,14 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("updatedata")]
-        public ActionResult UpdateUserData([FromForm] UsersComing user)
+        public async Task<IActionResult> UpdateUserData([FromForm] UsersComing user)
         {
             PasswordHasher<Users> passwordHasher = new();
             var coPrzyszlo = user;
             Users userConverted = new Users();
             if (coPrzyszlo.ProfilePhoto == null)
             {
+                var userCame = await _context.Users.Where(eb => eb.Id == user.Id).FirstOrDefaultAsync();
                 userConverted = new Users
                 {
                     Id = coPrzyszlo.Id,
@@ -49,7 +51,7 @@ namespace Orch_back_API.Controllers
                     Region = coPrzyszlo.Region,
                     Age = coPrzyszlo.Age,
                     City = coPrzyszlo.City,
-                    ProfilePhotoPath = _context.Users.Where(eb => eb.Id == user.Id).FirstOrDefault().ProfilePhotoPath,
+                    ProfilePhotoPath = userCame!.ProfilePhotoPath,
                     Notifications = coPrzyszlo.Notifications,
                     Messes = coPrzyszlo.Messes
                 };
@@ -80,17 +82,23 @@ namespace Orch_back_API.Controllers
                     fileStream.Dispose();
                 }
             }
+
+            await _context.Users.Where(eb => eb.Id == userConverted.Id).ExecuteUpdateAsync(setters => setters
+                .SetProperty(eb => eb.Id, userConverted.Id).SetProperty(eb => eb.Username, userConverted.Username)
+                .SetProperty(eb => eb.Password, userConverted.Password).SetProperty(eb => eb.Email, userConverted.Email)
+                .SetProperty(eb => eb.Role, userConverted.Role).SetProperty(eb => eb.Region, userConverted.Region)
+                .SetProperty(eb => eb.Age, userConverted.Age).SetProperty(eb => eb.City, userConverted.City)
+                .SetProperty(eb => eb.ProfilePhotoPath, userConverted.ProfilePhotoPath).SetProperty(eb => eb.Notifications, userConverted.Notifications)
+                .SetProperty(eb => eb.Messes, userConverted.Messes));
             _context.ChangeTracker.Clear();
-            _context.Users.Update(userConverted);
-            _context.SaveChanges();
             return Ok(userConverted);
         }
 
         [HttpPost]
         [Route("getuserphoto")]
-        public ActionResult GetUserImage([FromBody] Users userWithIdOnly)
+        public async Task<IActionResult> GetUserImage([FromBody] Users userWithIdOnly)
         {
-            var user = _context.Users.Where(aw => aw.Id == userWithIdOnly.Id).First();
+            var user = await _context.Users.Where(aw => aw.Id == userWithIdOnly.Id).FirstAsync();
             var filePath = user.ProfilePhotoPath;
 
             if (!System.IO.File.Exists(filePath))
@@ -105,10 +113,10 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("getuserbyid")]
-        public ActionResult GetUserById([FromBody] UsersComing user)
+        public async Task<IActionResult> GetUserById([FromBody] UsersComing user)
         {
             var id = user.Id;
-            var userToReturn = _context.Users.Where(eb => eb.Id.Equals(id)).FirstOrDefault();
+            var userToReturn = await _context.Users.Where(eb => eb.Id.Equals(id)).FirstOrDefaultAsync();
             if(userToReturn != null)
             {
                 return Ok(new { userToReturn });
@@ -121,62 +129,65 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("addnotificationwhenprofilevisited")]
-        public ActionResult AddNotificationWhenProfileVisited([FromBody] NotificationObjectFromApi fromApi)
+        public async Task<IActionResult> AddNotificationWhenProfileVisited([FromBody] NotificationObjectFromApi fromApi)
         {
             Notifications notificationToBeAddedToDatabase = new Notifications();
-            Users authorOf = _context.Users.Where(eb => eb.Id.ToString() == fromApi.VisitorId).FirstOrDefault();
+            Users authorOf = await _context.Users.Where(eb => eb.Id.ToString() == fromApi.VisitorId).FirstOrDefaultAsync();
             notificationToBeAddedToDatabase.Id = Guid.NewGuid();
             notificationToBeAddedToDatabase.Author = authorOf;
             notificationToBeAddedToDatabase.AuthorId = authorOf.Id;
             notificationToBeAddedToDatabase.Content = "User " + authorOf.Username + " has visited your profile.";
             notificationToBeAddedToDatabase.SendDate = DateTime.Now;
             notificationToBeAddedToDatabase.DeliveryId = new Guid(fromApi.HostId);
-            _context.Notifications.Add(notificationToBeAddedToDatabase);
-            _context.SaveChanges();
+            await _context.Notifications.AddAsync(notificationToBeAddedToDatabase);
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpPost]
         [Route("getuserssearchedforwithfilters")]
-        public ActionResult GetUsersSearchedForWithFilters([FromForm] UsersComing user)
+        public async Task<IActionResult> GetUsersSearchedForWithFilters([FromForm] UsersComing user)  
         {
-            var ta = user;
+            var userCame = user;
 
-            if (!IsRegion(ta) && !IsAge(ta) && !IsCity(ta))
+            if (!IsRegion(userCame) && !IsAge(userCame) && !IsCity(userCame))
             {
                 return NotFound();
             }
 
             var query = _context.Users.AsQueryable();
 
-            if (IsRegion(ta))
+            if (IsRegion(userCame))
             {
-                query = query.Where(eb => eb.Region == ta.Region);
+                query = query.Where(eb => eb.Region == userCame.Region);
             }
 
-            if (IsAge(ta))
+            if (IsAge(userCame))
             {
-                query = query.Where(eb => eb.Age == ta.Age);
+                query = query.Where(eb => eb.Age == userCame.Age);
             }
 
-            if (IsCity(ta))
+            if (IsCity(userCame))
             {
-                query = query.Where(eb => eb.City == ta.City);
+                query = query.Where(eb => eb.City == userCame.City);
             }
 
-            var users = query.ToList();
-            users.Remove(_context.Users.Where(eb => eb.Id == ta.Id).FirstOrDefault()!);
+            var users = await query.ToListAsync();
+            var userToRemove = await _context.Users.Where(eb => eb.Id == userCame.Id).FirstOrDefaultAsync();
+            users.Remove(userToRemove!);
             return Ok(new {users});
         }
 
         [HttpPost]
         [Route("checkifusernameexists")]
         [AllowAnonymous]
-        public ActionResult CheckIfUsernameExists([FromBody] UsersComing user)
+        public async Task<IActionResult> CheckIfUsernameExists([FromBody] UsersComing user)
         {
-            foreach(var usera in _context.Users)
+            var users = await _context.Users.ToListAsync();
+
+            foreach(var userInLoop in users)
             {
-                if(usera.Username == user.Username)
+                if(userInLoop.Username == user.Username)
                 {
                     return Ok(true);
                 }
@@ -187,11 +198,13 @@ namespace Orch_back_API.Controllers
         [HttpPost]
         [Route("checkifemailexists")]
         [AllowAnonymous]
-        public ActionResult CheckIfEmailExists([FromBody] UsersComing user)
+        public async Task<IActionResult> CheckIfEmailExists([FromBody] UsersComing user)
         {
-            foreach (var usera in _context.Users)
+            var users = await _context.Users.ToListAsync();
+
+            foreach (var userInLoop in users)
             {
-                if (usera.Email == user.Email)
+                if (userInLoop.Email == user.Email)
                 {
                     return Ok(true);
                 }

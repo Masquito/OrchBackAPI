@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Orch_back_API.Entities;
 
 namespace Orch_back_API.Controllers
@@ -17,11 +18,9 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CleanOldNotifications()
+        public async Task<IActionResult> CleanOldNotifications()
         {
-            var notificationsToDelete = _context.Notifications.Where(eb => eb.SendDate < DateTime.UtcNow.AddDays(-3)).ToList();
-            _context.RemoveRange(notificationsToDelete);
-            _context.SaveChanges();
+            await _context.Notifications.Where(eb => eb.SendDate < DateTime.UtcNow.AddDays(-3)).ExecuteDeleteAsync();
             return Ok();
         }
     }

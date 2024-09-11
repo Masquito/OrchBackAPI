@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nethereum.Web3;
 using Orch_back_API.Entities;
 
 namespace Orch_back_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PaymentsController : ControllerBase
@@ -23,6 +26,17 @@ namespace Orch_back_API.Controllers
             this._logger = logger;
             this._configuration = configuration;
             this._dbContext = dbContext;
+        }
+
+        [HttpPost]
+        [Route("paymentcheck")]
+        public async Task<IActionResult> PaymentChecking([FromBody] UsersComing user)
+        {
+            var web3 = new Web3(InfuraHTTPS);
+            var balance = await web3.Eth.GetBalance.SendRequestAsync("0x184219a0571e7FD761baF62769491c22D598b1Fb");
+            var etherAmount = Web3.Convert.FromWei(balance.Value);
+
+            return Ok(new {balance, etherAmount});
         }
 
 

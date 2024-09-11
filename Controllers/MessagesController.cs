@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Orch_back_API.Entities;
 
 namespace Orch_back_API.Controllers
@@ -20,10 +21,11 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("GetAllUserMessagessWithFilter")]
-        public ActionResult GetAllUserMessagessWithFilter([FromForm] UsersComing userWithIdOnlyAndOnUsernameIsFilter)
+        public async Task<IActionResult> GetAllUserMessagessWithFilter([FromForm] UsersComing userWithIdOnlyAndOnUsernameIsFilter)
         {
             var users = new List<Users>();
-            var messages = _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnlyAndOnUsernameIsFilter.Id).ToList().OrderByDescending(eb => eb.SendDate);
+            var messagesPreOrdered = await _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnlyAndOnUsernameIsFilter.Id).ToListAsync();
+            var messages = messagesPreOrdered.OrderByDescending(eb => eb.SendDate);
             List<Guid> authorIds = [];
             foreach (var message in messages)
             {
@@ -32,11 +34,11 @@ namespace Orch_back_API.Controllers
 
             if(userWithIdOnlyAndOnUsernameIsFilter.Username == null)
             {
-                users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id))];
+                users = await _context.Users.Where(eb => authorIds.Contains(eb.Id)).ToListAsync();
             }
             else
             {
-                users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id)).Where(x => x.Username.Contains(userWithIdOnlyAndOnUsernameIsFilter.Username))];
+                users = await _context.Users.Where(eb => authorIds.Contains(eb.Id)).Where(x => x.Username.Contains(userWithIdOnlyAndOnUsernameIsFilter.Username)).ToListAsync();
             }
 
             if (messages.Count() == 0)
@@ -51,17 +53,18 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("GetAllUserMessagess")]
-        public ActionResult GetAllUserMessagess([FromBody] UsersComing userWithIdOnly)
+        public async Task<IActionResult> GetAllUserMessagess([FromBody] UsersComing userWithIdOnly)
         {
             var users = new List<Users>();
-            var messages = _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnly.Id).ToList().OrderByDescending(eb => eb.SendDate);
+            var messagesPreOrdered = await _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnly.Id).ToListAsync();
+            var messages = messagesPreOrdered.OrderByDescending(eb => eb.SendDate);
             List<Guid> authorIds = [];    
             foreach (var message in messages)
             {
                 authorIds.Add((Guid)message.AuthorId);
             }
 
-            users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id))];
+            users = await _context.Users.Where(eb => authorIds.Contains(eb.Id)).ToListAsync();
 
             if(messages.Count() == 0)
             {
@@ -75,17 +78,18 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("GetLast5UserMessages")]
-        public ActionResult GetLast5UserMessages([FromBody] UsersComing userWithIdOnly)
+        public async Task<IActionResult> GetLast5UserMessages([FromBody] UsersComing userWithIdOnly)
         {
             var users = new List<Users>();
-            var messages = _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnly.Id).ToList().OrderByDescending(eb => eb.SendDate).Take(5);
+            var messagesPreOrder = await _context.Messages.Where(eb => eb.DeliveryId == userWithIdOnly.Id).ToListAsync();
+            var messages = messagesPreOrder.OrderByDescending(eb => eb.SendDate).Take(5);
             List<Guid> authorIds = [];
             foreach (var message in messages)
             {
                 authorIds.Add((Guid)message.AuthorId);
             }
 
-            users = [.. _context.Users.Where(eb => authorIds.Contains(eb.Id))];
+            users = await _context.Users.Where(eb => authorIds.Contains(eb.Id)).ToListAsync();
 
             if (messages.Count() == 0)
             {
@@ -99,12 +103,12 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("reciveMessageSendByUserToUser")]
-        public ActionResult ReciveMessageSendByUsertoUser([FromForm] Messages message)
+        public async Task<IActionResult> ReciveMessageSendByUsertoUser([FromForm] Messages message)
         {
             //Notification to user
             Notifications notification = new Notifications();
             notification.Id = Guid.NewGuid();
-            notification.Author = _context.Users.Where(eb => eb.Id == message.AuthorId).FirstOrDefault();
+            notification.Author = await _context.Users.Where(eb => eb.Id == message.AuthorId).FirstOrDefaultAsync();
             notification.Content = "User " + notification.Author.Username + " sent you a message";
             notification.SendDate = DateTime.Now;
             notification.DeliveryId = message.DeliveryId;
@@ -117,12 +121,12 @@ namespace Orch_back_API.Controllers
             messageToWrite.SendDate = DateTime.UtcNow;
             messageToWrite.DeliveryId = message.DeliveryId;
             messageToWrite.AuthorId = message.AuthorId;
-            messageToWrite.Author = _context.Users.Where(eb => eb.Id == message.AuthorId).FirstOrDefault();
+            messageToWrite.Author = await _context.Users.Where(eb => eb.Id == message.AuthorId).FirstOrDefaultAsync();
 
             //Database operations
-            _context.Messages.Add(messageToWrite);
-            _context.Notifications.Add(notification);
-            _context.SaveChanges();
+            await _context.Messages.AddAsync(messageToWrite);
+            await _context.Notifications.AddAsync(notification);
+            await _context.SaveChangesAsync();
 
             return Ok("wiadomosc dodana poprawnie");
         }

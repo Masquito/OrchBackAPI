@@ -30,20 +30,23 @@ namespace Orch_back_API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Register([FromBody] Users users)
+        public async Task<IActionResult> Register([FromBody] Users userCame)
         {
             PasswordHasher<Users> passwordHasher = new();
-            Users userToAdd = users;
-            if (_dbcontext.Users.Contains(userToAdd))
+            Users userToAdd = userCame;
+
+            var users = await _dbcontext.Users.ToListAsync();
+            if (users.Contains(userToAdd))
             {
                 return Forbid("User already exists");
             }
+
             userToAdd.Role = "NFUA";
             userToAdd.Id = new Guid();
             userToAdd.Password = passwordHasher.HashPassword(userToAdd, userToAdd.Password);
             userToAdd.ProfilePhotoPath = Shared.ImgagesFolderPath + "\\defaultProfilePicture.png";
-            _dbcontext.Users.Add(userToAdd);
-            _dbcontext.SaveChanges();
+            await _dbcontext.Users.AddAsync(userToAdd);
+            await _dbcontext.SaveChangesAsync();
             bool finished = true;
             return Ok(new { finished });
         }

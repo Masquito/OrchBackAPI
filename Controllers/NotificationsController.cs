@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Orch_back_API.Entities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -25,10 +26,10 @@ namespace Orch_back_API.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetAllNotificationsFrom3Days([FromBody] Users loggedUserWithIdOnly)
+        public async Task<IActionResult> GetAllNotificationsFrom3Days([FromBody] Users loggedUserWithIdOnly)
         {
             List<objToSend> toSend = new List<objToSend>();
-            List<Notifications> loggedUserNotificationsFrom3Months = [.. _context.Notifications.Where(x => x.DeliveryId == loggedUserWithIdOnly.Id).Where(x => x.SendDate > DateTime.UtcNow.AddDays(-3))];
+            List<Notifications> loggedUserNotificationsFrom3Months = await _context.Notifications.Where(x => x.DeliveryId == loggedUserWithIdOnly.Id).Where(x => x.SendDate > DateTime.UtcNow.AddDays(-3)).ToListAsync();
 
             foreach(var notification in loggedUserNotificationsFrom3Months)
             {
@@ -52,11 +53,10 @@ namespace Orch_back_API.Controllers
 
         [HttpPost]
         [Route("DeleteNotification")]
-        public ActionResult DeleteNotification([FromBody] Notifications notificationWithIdOnly)
+        public async Task<IActionResult> DeleteNotification([FromBody] Notifications notificationWithIdOnly)
         {
             var coPrzyszl = notificationWithIdOnly;
-            _context.Notifications.Remove(coPrzyszl);
-            _context.SaveChanges();
+            await _context.Notifications.Where(eb => eb.Id == coPrzyszl.Id).ExecuteDeleteAsync();
             return Ok();
         }
 
