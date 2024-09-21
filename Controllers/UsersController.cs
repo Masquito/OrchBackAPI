@@ -88,8 +88,7 @@ namespace Orch_back_API.Controllers
                 .SetProperty(eb => eb.Password, userConverted.Password).SetProperty(eb => eb.Email, userConverted.Email)
                 .SetProperty(eb => eb.Role, userConverted.Role).SetProperty(eb => eb.Region, userConverted.Region)
                 .SetProperty(eb => eb.Age, userConverted.Age).SetProperty(eb => eb.City, userConverted.City)
-                .SetProperty(eb => eb.ProfilePhotoPath, userConverted.ProfilePhotoPath).SetProperty(eb => eb.Notifications, userConverted.Notifications)
-                .SetProperty(eb => eb.Messes, userConverted.Messes));
+                .SetProperty(eb => eb.ProfilePhotoPath, userConverted.ProfilePhotoPath)); 
             _context.ChangeTracker.Clear();
             return Ok(userConverted);
         }
