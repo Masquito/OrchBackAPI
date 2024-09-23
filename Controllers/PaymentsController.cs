@@ -104,7 +104,7 @@ namespace Orch_back_API.Controllers
         [Route("gettxhash")]
         public async Task<IActionResult> Gettxhash([FromBody] UsersComing usercoming)
         {
-            var userfull = _dbContext.Users.Where(ev => ev.Id == usercoming.Id).FirstOrDefault();
+            var userfull = await _dbContext.Users.Where(ev => ev.Id == usercoming.Id).FirstOrDefaultAsync();
             return Ok(new {userfull!.Role});
         }
 
