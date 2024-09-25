@@ -135,7 +135,7 @@ namespace Orch_back_API.Controllers
             notificationToBeAddedToDatabase.Id = Guid.NewGuid();
             notificationToBeAddedToDatabase.Author = authorOf;
             notificationToBeAddedToDatabase.AuthorId = authorOf.Id;
-            notificationToBeAddedToDatabase.Content = "User " + authorOf.Username + " has visited your profile.";
+            notificationToBeAddedToDatabase.Content = "User " + authorOf.Username + " has visited your profile";
             notificationToBeAddedToDatabase.SendDate = DateTime.Now;
             notificationToBeAddedToDatabase.DeliveryId = new Guid(fromApi.HostId);
             await _context.Notifications.AddAsync(notificationToBeAddedToDatabase);

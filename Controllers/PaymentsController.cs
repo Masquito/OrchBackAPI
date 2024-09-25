@@ -15,9 +15,6 @@ namespace Orch_back_API.Controllers
     [ApiController]
     public class PaymentsController : ControllerBase
     {
-        //Fire programing music: https://www.youtube.com/watch?v=AF8LSurfct4&list=PLEM4vOSCprStzppPemEYAF6ZEUrQYj5N5&ab_channel=FilFar
-
-        //Can be looked up on Infura account
         private static string APIKey = "b8af0de6aa8e4d8aae4902937a7386ff";
         private static string InfuraHTTPS = "https://mainnet.infura.io/v3/b8af0de6aa8e4d8aae4902937a7386ff";
         private static string localGanacheNetwork = "HTTP://127.0.0.1:7545";
@@ -38,12 +35,12 @@ namespace Orch_back_API.Controllers
         public async Task<IActionResult> PaymentChecking([FromBody] UsersComing user)
         {
             //var web3 = new Web3(localGanacheNetwork);
-            //var balance = await web3.Eth.GetBalance.SendRequestAsync("0x63DAAA0A3b8AE575e80332d886844C2Ce31B8B98");
+            //var balance = await web3.Eth.GetBalance.SendRequestAsync("");
             //var etherAmount = Web3.Convert.FromWei(balance.Value);
 
 
             //First let's create an account with our private key for the account address 
-            var privateKey = "0x96b71f2001054a91552ea77835ed15183e0c412e418890ffd350e93798244c30";
+            var privateKey = "";
             var chainId = 1337;
             var account = new Account(privateKey, chainId);
             Console.WriteLine("Our account: " + account.Address);
@@ -53,28 +50,22 @@ namespace Orch_back_API.Controllers
 
 
 
-            //To się chyba da zrobić przez .js na FrontEndzie i raczej tak to zrób byczq plan jest taki:
-            // przez MetaMask js API na FrontEndzie user może dokonać transakcji i ją podpisać, potem wysyłasz z Frontu tu Hash Transakcji i odsyłasz na Front Status
-            // czy jest pending, czy jest Confirmed etc
-
-
-
             // Check the balance of the account we are going to send the Ether
-            var balance = await web3.Eth.GetBalance.SendRequestAsync("0xD1Ec752341bb132f383642A98760ac9466cEeC45");
+            var balance = await web3.Eth.GetBalance.SendRequestAsync("");
             Console.WriteLine("Receiver account balance before sending Ether: " + balance.Value + " Wei");
             Console.WriteLine("Receiver account balance before sending Ether: " + Web3.Convert.FromWei(balance.Value) +
                               " Ether");
 
             // Lets transfer 1.11 Ether
             var transaction = await web3.Eth.GetEtherTransferService()
-                .TransferEtherAndWaitForReceiptAsync("0xD1Ec752341bb132f383642A98760ac9466cEeC45", 1.11m);
+                .TransferEtherAndWaitForReceiptAsync("", 1.11m);
 
-            balance = await web3.Eth.GetBalance.SendRequestAsync("0xD1Ec752341bb132f383642A98760ac9466cEeC45");
+            balance = await web3.Eth.GetBalance.SendRequestAsync("");
             Console.WriteLine("Receiver account balance after sending Ether: " + balance.Value);
             Console.WriteLine("Receiver account balance after sending Ether: " + Web3.Convert.FromWei(balance.Value) +
                               " Ether");
             var transferHandler = web3.Eth.GetEtherTransferService();
-            var receipt = web3.Eth.Transactions.GetTransactionReceipt.CreateBatchItem("0x888adbd466a5421eedef42ce30af5b6f403b464f27a193d2fdfb1ccfe93a8c73", 3);
+            var receipt = web3.Eth.Transactions.GetTransactionReceipt.CreateBatchItem("", 3);
             return Ok(new {balance});
         }
 
