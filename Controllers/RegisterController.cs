@@ -36,9 +36,12 @@ namespace Orch_back_API.Controllers
             Users userToAdd = userCame;
 
             var users = await _dbcontext.Users.ToListAsync();
-            if (users.Contains(userToAdd))
+            foreach(var user in users)
             {
-                return Forbid("User already exists");
+                if(user.Username == userToAdd.Username || user.Email == userToAdd.Email)
+                {
+                    return NotFound("User already exists");
+                }
             }
 
             userToAdd.Role = "NFUA";
