@@ -130,5 +130,44 @@ namespace Orch_back_API.Controllers
 
             return Ok("wiadomosc dodana poprawnie");
         }
+
+        [HttpPost]
+        [Route("permitmessagesend")]
+        public async Task<IActionResult> PermitMessageSend([FromBody] UsersComing user)
+        {
+            var userFull = await _context.Users.Where(eb => eb.Id == user.Id).FirstOrDefaultAsync();
+            var howManyMessagesThisDay = await _context.Messages.Where(eb => eb.AuthorId == userFull!.Id).ToListAsync();
+            int counter = 0;
+
+            foreach (var message in howManyMessagesThisDay)
+            {
+                int year = DateTime.Now.Year;
+                int month = DateTime.Now.Month;
+                int day = DateTime.Now.Day;
+                DateTime fromMsg = (DateTime)message.SendDate;
+
+                if(fromMsg.Year == year && fromMsg.Month == month && fromMsg.Day == day)
+                {
+                    counter++;
+                }
+            }
+
+            if(userFull.Role != "FUA")
+            {
+                if (counter >= 5)
+                {
+                    return NotFound("Daily messages limit has been achieved");
+                }
+                else
+                {
+                    return Ok(true);
+                }
+            }
+            else
+            {
+                return Ok(true);
+            }
+
+        }
     }
 }
