@@ -84,7 +84,7 @@ namespace Orch_back_API.Controllers
                 notification.Content = "SYSTEM: Your transaction has been completed. Your are now a Full Access User.";
                 notification.SendDate = DateTime.Now;
                 notification.DeliveryId = user!.Id;
-                notification.AuthorId = user!.Id;
+                notification.AuthorId = null;
                 await _dbContext.AddAsync(notification);
                 await _dbContext.SaveChangesAsync();
             }

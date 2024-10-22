@@ -33,12 +33,15 @@ namespace Orch_back_API.Controllers
 
             foreach(var notification in loggedUserNotificationsFrom3Months)
             {
-                DateTime data = (DateTime)notification.SendDate;
-                objToSend not = new objToSend();
-                not.notification = notification;
-                not.dateS = data.Hour.ToString() + ":" + checkIfAdd0(data.Minute);
-                not.dateL = data.Year.ToString() + "." + checkIfAdd0(data.Month) + "." + checkIfAdd0(data.Day);
-                toSend.Add(not);
+                if(notification.AuthorId.ToString() != loggedUserWithIdOnly.Id.ToString())
+                {
+                    DateTime data = (DateTime)notification.SendDate;
+                    objToSend not = new objToSend();
+                    not.notification = notification;
+                    not.dateS = data.Hour.ToString() + ":" + checkIfAdd0(data.Minute);
+                    not.dateL = data.Year.ToString() + "." + checkIfAdd0(data.Month) + "." + checkIfAdd0(data.Day);
+                    toSend.Add(not);
+                }
             }
 
             if(loggedUserNotificationsFrom3Months.Count == 0)
