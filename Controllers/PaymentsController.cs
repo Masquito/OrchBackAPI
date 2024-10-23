@@ -80,7 +80,7 @@ namespace Orch_back_API.Controllers
                 Notifications notification = new Notifications();
                 notification.Id = Guid.NewGuid();
                 var user = await _dbContext.Users.Where(eb => eb.Id == userWithtxhash.Id).FirstOrDefaultAsync();
-                notification.Author = user;
+                notification.Author = null;
                 notification.Content = "SYSTEM: Your transaction has been completed. Your are now a Full Access User.";
                 notification.SendDate = DateTime.Now;
                 notification.DeliveryId = user!.Id;
