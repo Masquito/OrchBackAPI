@@ -9,18 +9,17 @@ using System.Text.Json.Serialization;
 
 namespace Orch_back_API
 {
-    /// <summary>Klasa program, w której znajdziemy Main'a</summary>
     public class Program
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 
             var config = builder.Configuration;
-            var secret = config["Jwt:Secret"];
+            var secret = Environment.GetEnvironmentVariable("SECRET");
 
             /// <summary>
-            ///     <p>Definicja CORS dla API. Dodajemy tutaj now¹ strategiê, która jest pod mój FrontEnd w Angularze na andresie http://localhost:4200</p>
             ///     <p>Akceptujemy dowoln¹ metodê HTTP przy ¿¹daniach z origina zdefiniowanego wy¿ej pod localhostem</p>
             ///     <p>Akceptujemy dowolny nag³ówek z origina zdefiniowanego wy¿ej pod localhostem</p>
             ///     <p>¯¹dania mog¹ zawieraæ dane uwierzytelniaj¹ce/p>
@@ -37,7 +36,6 @@ namespace Orch_back_API
 
             });
 
-            /// <summary>Tutaj dodajemy autoryzacjê JWT. Poprzez metodê AddAuthentication i AddJwtBearer</summary>
             builder.Services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,11 +57,7 @@ namespace Orch_back_API
             });
 
 
-            /// <summary>
-            ///     <p>Dodanie kilku us³ug oraz DBContextu z ConnectionStringiem</p>
-            /// </summary>
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddControllers()
@@ -77,7 +71,6 @@ namespace Orch_back_API
                 options.EnableSensitiveDataLogging();
             });
 
-            /// <summary>Zbudowanie aplikacji</summary>
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -86,8 +79,6 @@ namespace Orch_back_API
                 app.UseSwaggerUI();
             }
 
-            /// <summary>Konfiguracja Middleware'ów oraz Dodanie endpointów dla akcji kontrollerów do IEndpointRouteBuilder bez specyfikowania œcie¿ek</summary>
-            /// <seealso cref="https://learn.microsoft.com/pl-pl/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0"/>
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors("CORSPolicy");

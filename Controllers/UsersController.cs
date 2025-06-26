@@ -20,6 +20,7 @@ namespace Orch_back_API.Controllers
         public string VisitorId { get; set; }
         public string HostId { get; set;}
     }
+
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
